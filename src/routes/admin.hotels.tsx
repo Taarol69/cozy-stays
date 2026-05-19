@@ -19,7 +19,7 @@ type Hotel = Database["public"]["Tables"]["hotels"]["Row"];
 export const Route = createFileRoute("/admin/hotels")({ component: AdminHotels });
 
 const empty = {
-  name: "", description: "", city: "", country: "", address: "",
+  name: "", description: "", city: "Kathmandu", country: "Nepal", address: "",
   cover_image: "", images: "", amenities: "", star_rating: 4, price_from: 100,
 };
 

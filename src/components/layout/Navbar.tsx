@@ -31,7 +31,7 @@ export function Navbar() {
         <Link to="/" className="flex items-center gap-2">
           <Hotel className="h-6 w-6 text-gold" />
           <span className="font-display text-xl font-semibold tracking-tight">
-            Auré<span className="text-gold">Stay</span>
+            Himal<span className="text-gold">Stay</span>
           </span>
         </Link>
 

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, MapPin, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Price } from "@/lib/currency";
 import type { Database } from "@/integrations/supabase/types";
 
 type Hotel = Database["public"]["Tables"]["hotels"]["Row"];
@@ -58,11 +59,8 @@ export function HotelCard({ hotel, isFavorite, onToggleFavorite }: Props) {
               <span className="font-medium">{Number(hotel.rating).toFixed(1)}</span>
             </div>
             <div className="text-right">
-              <span className="text-xs text-muted-foreground">from </span>
-              <span className="font-display text-lg font-semibold text-gold">
-                ${Number(hotel.price_from).toFixed(0)}
-              </span>
-              <span className="text-xs text-muted-foreground"> /night</span>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">from / night</div>
+              <Price usd={Number(hotel.price_from)} className="font-display text-base font-semibold text-gold" size="sm" />
             </div>
           </div>
         </div>

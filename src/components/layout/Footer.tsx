@@ -10,11 +10,11 @@ export function Footer() {
             <Link to="/" className="flex items-center gap-2">
               <Hotel className="h-5 w-5 text-gold" />
               <span className="font-display text-lg font-semibold">
-                Auré<span className="text-gold">Stay</span>
+                Himal<span className="text-gold">Stay</span>
               </span>
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
-              Curated luxury stays for discerning travelers.
+              Curated stays across Nepal — from the Himalayas to the heritage cities.
             </p>
           </div>
           <div>
@@ -36,13 +36,14 @@ export function Footer() {
           <div>
             <h4 className="mb-3 text-sm font-semibold">Contact</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>hello@aurestay.com</li>
-              <li>+1 (555) 010-2024</li>
+              <li>hello@himalstay.com</li>
+              <li>+977 1-555-0024</li>
+              <li>Thamel, Kathmandu, Nepal</li>
             </ul>
           </div>
         </div>
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border/40 pt-6 text-xs text-muted-foreground md:flex-row">
-          <p>© {new Date().getFullYear()} AuréStay. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} HimalStay. All rights reserved.</p>
           <p>Crafted with care.</p>
         </div>
       </div>

@@ -9,6 +9,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { Price } from "@/lib/currency";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/bookings")({ component: AdminBookings });
@@ -79,7 +80,8 @@ function AdminBookings() {
                 <div className="mt-1 flex flex-wrap gap-1.5 text-xs">
                   <Badge variant="outline">{b.check_in} → {b.check_out}</Badge>
                   <Badge variant="outline">{b.nights}n</Badge>
-                  <Badge variant="outline">${Number(b.total_price).toFixed(0)}</Badge>
+                  <Badge variant="outline"><Price usd={Number(b.total_price)} showUsd={false} /></Badge>
+                  <Badge variant="outline" className="text-muted-foreground">${Number(b.total_price).toFixed(0)}</Badge>
                 </div>
               </div>
               <Select value={b.status} onValueChange={(v) => setStatus(b.id, v)}>

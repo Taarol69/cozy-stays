@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { Price } from "@/lib/currency";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -184,9 +185,7 @@ function HotelDetail() {
                         </div>
                         <div className="flex flex-col items-end gap-2 p-4">
                           <div className="text-right">
-                            <div className="font-display text-2xl font-semibold text-gold">
-                              ${Number(room.price_per_night).toFixed(0)}
-                            </div>
+                            <Price usd={Number(room.price_per_night)} className="font-display text-xl font-semibold text-gold" size="md" />
                             <div className="text-xs text-muted-foreground">per night</div>
                           </div>
                           <Button
@@ -233,8 +232,8 @@ function HotelDetail() {
             <Card className="p-6">
               <div className="mb-4">
                 <span className="text-sm text-muted-foreground">From</span>
-                <div className="font-display text-3xl font-semibold text-gold">
-                  ${Number(hotel.price_from).toFixed(0)}
+                <div className="mt-1">
+                  <Price usd={Number(hotel.price_from)} className="font-display text-2xl font-semibold text-gold" size="md" />
                 </div>
                 <span className="text-xs text-muted-foreground">per night</span>
               </div>
