@@ -1,11 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Search, MapPin, Calendar, Users, Sparkles, Shield, Award } from "lucide-react";
+import { Search, MapPin, Calendar, Users, Sparkles, Shield, Award, Mountain } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { HotelCard } from "@/components/HotelCard";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrency, formatNPR } from "@/lib/currency";
 import type { Database } from "@/integrations/supabase/types";
 
 type Hotel = Database["public"]["Tables"]["hotels"]["Row"];
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const navigate = useNavigate();
+  const { rate, isLive } = useCurrency();
   const [location, setLocation] = useState("");
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -45,24 +47,29 @@ function Home() {
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <img
-            src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=2000&q=80"
-            alt="Luxury hotel lobby"
+            src="https://images.unsplash.com/photo-1605640840605-14ac1855827b?w=2000&q=80"
+            alt="Himalayan mountains at sunrise over Nepal"
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
         </div>
 
         <div className="container mx-auto px-4 pt-24 pb-32 md:pt-32 md:pb-40">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="mb-4 text-xs uppercase tracking-[0.3em] text-gold">
-              Curated · Luxury · Effortless
+            <p className="mb-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-gold">
+              <Mountain className="h-3.5 w-3.5" /> Nepal · Himalaya · Heritage
             </p>
             <h1 className="font-display text-4xl font-semibold leading-tight md:text-6xl">
-              Find your next <span className="text-gold">extraordinary</span> stay
+              Stays across <span className="text-gold">Nepal</span>, priced in <span className="text-gold">रू</span>
             </h1>
             <p className="mt-5 text-base text-muted-foreground md:text-lg">
-              Hand-picked hotels and resorts. Transparent pricing. Booking in under a minute.
+              Hand-picked hotels in Kathmandu, Pokhara, Chitwan and the Himalayas.
+              Live NPR / USD pricing. Booking in under a minute.
             </p>
+            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/70 px-4 py-1.5 text-xs text-muted-foreground backdrop-blur">
+              <span className={`h-1.5 w-1.5 rounded-full ${isLive ? "bg-gold" : "bg-muted-foreground"}`} />
+              {isLive ? "Live rate" : "Reference rate"}: 1 USD = {formatNPR(rate)}
+            </div>
           </div>
 
           {/* Search box */}
@@ -76,7 +83,7 @@ function Home() {
                 <Input
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Where are you going?"
+                  placeholder="Kathmandu, Pokhara, Chitwan…"
                   className="border-0 p-0 shadow-none focus-visible:ring-0"
                 />
               </div>
