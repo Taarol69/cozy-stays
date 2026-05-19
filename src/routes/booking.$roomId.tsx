@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { Price, formatNPR, useCurrency } from "@/lib/currency";
 import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 
