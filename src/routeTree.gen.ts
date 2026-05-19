@@ -9,10 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
+import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
+import { Route as DashboardFavoritesRouteImport } from './routes/dashboard.favorites'
+import { Route as DashboardBookingsRouteImport } from './routes/dashboard.bookings'
+import { Route as BookingRoomIdRouteImport } from './routes/booking.$roomId'
+import { Route as AuthRegisterRouteImport } from './routes/auth.register'
+import { Route as AuthLoginRouteImport } from './routes/auth.login'
 
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -28,39 +46,149 @@ const HotelsHotelIdRoute = HotelsHotelIdRouteImport.update({
   path: '/hotels/$hotelId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardProfileRoute = DashboardProfileRouteImport.update({
+  id: '/dashboard/profile',
+  path: '/dashboard/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardFavoritesRoute = DashboardFavoritesRouteImport.update({
+  id: '/dashboard/favorites',
+  path: '/dashboard/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardBookingsRoute = DashboardBookingsRouteImport.update({
+  id: '/dashboard/bookings',
+  path: '/dashboard/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookingRoomIdRoute = BookingRoomIdRouteImport.update({
+  id: '/booking/$roomId',
+  path: '/booking/$roomId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/booking/$roomId': typeof BookingRoomIdRoute
+  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/favorites': typeof DashboardFavoritesRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/': typeof HotelsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/booking/$roomId': typeof BookingRoomIdRoute
+  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/favorites': typeof DashboardFavoritesRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels': typeof HotelsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
+  '/booking/$roomId': typeof BookingRoomIdRoute
+  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/favorites': typeof DashboardFavoritesRoute
+  '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/hotels/': typeof HotelsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/hotels/$hotelId' | '/hotels/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/auth/login'
+    | '/auth/register'
+    | '/booking/$roomId'
+    | '/dashboard/bookings'
+    | '/dashboard/favorites'
+    | '/dashboard/profile'
+    | '/hotels/$hotelId'
+    | '/hotels/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/hotels/$hotelId' | '/hotels'
-  id: '__root__' | '/' | '/hotels/$hotelId' | '/hotels/'
+  to:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/auth/login'
+    | '/auth/register'
+    | '/booking/$roomId'
+    | '/dashboard/bookings'
+    | '/dashboard/favorites'
+    | '/dashboard/profile'
+    | '/hotels/$hotelId'
+    | '/hotels'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/auth/login'
+    | '/auth/register'
+    | '/booking/$roomId'
+    | '/dashboard/bookings'
+    | '/dashboard/favorites'
+    | '/dashboard/profile'
+    | '/hotels/$hotelId'
+    | '/hotels/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ContactRoute: typeof ContactRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
+  BookingRoomIdRoute: typeof BookingRoomIdRoute
+  DashboardBookingsRoute: typeof DashboardBookingsRoute
+  DashboardFavoritesRoute: typeof DashboardFavoritesRoute
+  DashboardProfileRoute: typeof DashboardProfileRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,11 +210,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HotelsHotelIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/profile': {
+      id: '/dashboard/profile'
+      path: '/dashboard/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof DashboardProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/favorites': {
+      id: '/dashboard/favorites'
+      path: '/dashboard/favorites'
+      fullPath: '/dashboard/favorites'
+      preLoaderRoute: typeof DashboardFavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/bookings': {
+      id: '/dashboard/bookings'
+      path: '/dashboard/bookings'
+      fullPath: '/dashboard/bookings'
+      preLoaderRoute: typeof DashboardBookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/booking/$roomId': {
+      id: '/booking/$roomId'
+      path: '/booking/$roomId'
+      fullPath: '/booking/$roomId'
+      preLoaderRoute: typeof BookingRoomIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ContactRoute: ContactRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
+  BookingRoomIdRoute: BookingRoomIdRoute,
+  DashboardBookingsRoute: DashboardBookingsRoute,
+  DashboardFavoritesRoute: DashboardFavoritesRoute,
+  DashboardProfileRoute: DashboardProfileRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
   HotelsIndexRoute: HotelsIndexRoute,
 }
