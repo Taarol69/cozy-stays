@@ -29,6 +29,7 @@ function todayISO(offset = 0) {
 function BookingPage() {
   const { roomId } = Route.useParams();
   const { user } = useAuth();
+  const { rate } = useCurrency();
   const navigate = useNavigate();
   const [room, setRoom] = useState<Room | null>(null);
   const [hotel, setHotel] = useState<Hotel | null>(null);
@@ -117,7 +118,7 @@ function BookingPage() {
               <div className="flex justify-between"><span className="text-muted-foreground">Room</span><span>{room.name}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Check-in</span><span>{checkIn}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Check-out</span><span>{checkOut}</span></div>
-              <div className="flex justify-between font-medium"><span>Total</span><span className="text-gold">${total.toFixed(2)}</span></div>
+              <div className="flex justify-between font-medium"><span>Total</span><span className="text-gold">{formatNPR(total * rate)} <span className="text-xs font-normal text-muted-foreground">(${total.toFixed(2)})</span></span></div>
             </div>
             <div className="mt-6 flex gap-2">
               <Button asChild variant="outline" className="flex-1"><Link to="/dashboard/bookings">My bookings</Link></Button>
@@ -183,11 +184,15 @@ function BookingPage() {
               <h3 className="mb-4 font-display text-lg font-semibold">Price summary</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-muted-foreground">{room.name}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">${Number(room.price_per_night).toFixed(0)} × {nights} night(s)</span><span>${total.toFixed(2)}</span></div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground"><Price usd={Number(room.price_per_night)} showUsd={false} /> × {nights} night(s)</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
               </div>
               <div className="mt-4 border-t border-border/60 pt-4">
-                <div className="flex justify-between font-display text-lg font-semibold">
-                  <span>Total</span><span className="text-gold">${total.toFixed(2)}</span>
+                <div className="flex flex-col gap-1 font-display text-lg font-semibold">
+                  <div className="flex justify-between"><span>Total</span><span className="text-gold">{formatNPR(total * rate)}</span></div>
+                  <div className="flex justify-between text-sm font-normal text-muted-foreground"><span>USD equivalent</span><span>${total.toFixed(2)}</span></div>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">Pay at hotel — no card required.</p>
               </div>
