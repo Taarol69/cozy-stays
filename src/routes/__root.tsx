@@ -11,6 +11,7 @@ import {
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
+import { CurrencyProvider } from "@/lib/currency";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -75,11 +76,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AuréStay — Curated Luxury Hotel Stays" },
-      { name: "description", content: "Discover and book exceptional hotels around the world. Premium stays, transparent pricing, and seamless booking." },
-      { name: "author", content: "AuréStay" },
-      { property: "og:title", content: "AuréStay — Curated Luxury Hotel Stays" },
-      { property: "og:description", content: "Discover and book exceptional hotels around the world." },
+      { title: "HimalStay — Curated Hotel Stays Across Nepal" },
+      { name: "description", content: "Discover and book exceptional hotels across Nepal — from Kathmandu and Pokhara to Chitwan and the Himalayas. Live NPR / USD pricing." },
+      { name: "author", content: "HimalStay" },
+      { property: "og:title", content: "HimalStay — Curated Hotel Stays Across Nepal" },
+      { property: "og:description", content: "Discover and book exceptional hotels across Nepal." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -121,8 +122,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <Outlet />
-          <Toaster richColors position="top-right" />
+          <CurrencyProvider>
+            <Outlet />
+            <Toaster richColors position="top-right" />
+          </CurrencyProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
