@@ -13,6 +13,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
 import { Route as DashboardFavoritesRouteImport } from './routes/dashboard.favorites'
@@ -20,6 +21,9 @@ import { Route as DashboardBookingsRouteImport } from './routes/dashboard.bookin
 import { Route as BookingRoomIdRouteImport } from './routes/booking.$roomId'
 import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AdminRoomsRouteImport } from './routes/admin.rooms'
+import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
+import { Route as AdminBookingsRouteImport } from './routes/admin.bookings'
 
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
@@ -39,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
 const HotelsIndexRoute = HotelsIndexRouteImport.update({
   id: '/hotels/',
   path: '/hotels/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HotelsHotelIdRoute = HotelsHotelIdRouteImport.update({
@@ -76,11 +85,29 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoomsRoute = AdminRoomsRouteImport.update({
+  id: '/admin/rooms',
+  path: '/admin/rooms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminHotelsRoute = AdminHotelsRouteImport.update({
+  id: '/admin/hotels',
+  path: '/admin/hotels',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminBookingsRoute = AdminBookingsRouteImport.update({
+  id: '/admin/bookings',
+  path: '/admin/bookings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/admin/bookings': typeof AdminBookingsRoute
+  '/admin/hotels': typeof AdminHotelsRoute
+  '/admin/rooms': typeof AdminRoomsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
@@ -88,12 +115,16 @@ export interface FileRoutesByFullPath {
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/admin/bookings': typeof AdminBookingsRoute
+  '/admin/hotels': typeof AdminHotelsRoute
+  '/admin/rooms': typeof AdminRoomsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
@@ -101,6 +132,7 @@ export interface FileRoutesByTo {
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
+  '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
 }
 export interface FileRoutesById {
@@ -108,6 +140,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
+  '/admin/bookings': typeof AdminBookingsRoute
+  '/admin/hotels': typeof AdminHotelsRoute
+  '/admin/rooms': typeof AdminRoomsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
@@ -115,6 +150,7 @@ export interface FileRoutesById {
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
+  '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
 }
 export interface FileRouteTypes {
@@ -123,6 +159,9 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/contact'
+    | '/admin/bookings'
+    | '/admin/hotels'
+    | '/admin/rooms'
     | '/auth/login'
     | '/auth/register'
     | '/booking/$roomId'
@@ -130,12 +169,16 @@ export interface FileRouteTypes {
     | '/dashboard/favorites'
     | '/dashboard/profile'
     | '/hotels/$hotelId'
+    | '/admin/'
     | '/hotels/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/contact'
+    | '/admin/bookings'
+    | '/admin/hotels'
+    | '/admin/rooms'
     | '/auth/login'
     | '/auth/register'
     | '/booking/$roomId'
@@ -143,12 +186,16 @@ export interface FileRouteTypes {
     | '/dashboard/favorites'
     | '/dashboard/profile'
     | '/hotels/$hotelId'
+    | '/admin'
     | '/hotels'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/contact'
+    | '/admin/bookings'
+    | '/admin/hotels'
+    | '/admin/rooms'
     | '/auth/login'
     | '/auth/register'
     | '/booking/$roomId'
@@ -156,6 +203,7 @@ export interface FileRouteTypes {
     | '/dashboard/favorites'
     | '/dashboard/profile'
     | '/hotels/$hotelId'
+    | '/admin/'
     | '/hotels/'
   fileRoutesById: FileRoutesById
 }
@@ -163,6 +211,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
+  AdminBookingsRoute: typeof AdminBookingsRoute
+  AdminHotelsRoute: typeof AdminHotelsRoute
+  AdminRoomsRoute: typeof AdminRoomsRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   BookingRoomIdRoute: typeof BookingRoomIdRoute
@@ -170,6 +221,7 @@ export interface RootRouteChildren {
   DashboardFavoritesRoute: typeof DashboardFavoritesRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
 }
 
@@ -201,6 +253,13 @@ declare module '@tanstack/react-router' {
       path: '/hotels'
       fullPath: '/hotels/'
       preLoaderRoute: typeof HotelsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hotels/$hotelId': {
@@ -252,6 +311,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/rooms': {
+      id: '/admin/rooms'
+      path: '/admin/rooms'
+      fullPath: '/admin/rooms'
+      preLoaderRoute: typeof AdminRoomsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/hotels': {
+      id: '/admin/hotels'
+      path: '/admin/hotels'
+      fullPath: '/admin/hotels'
+      preLoaderRoute: typeof AdminHotelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/bookings': {
+      id: '/admin/bookings'
+      path: '/admin/bookings'
+      fullPath: '/admin/bookings'
+      preLoaderRoute: typeof AdminBookingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -259,6 +339,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
+  AdminBookingsRoute: AdminBookingsRoute,
+  AdminHotelsRoute: AdminHotelsRoute,
+  AdminRoomsRoute: AdminRoomsRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   BookingRoomIdRoute: BookingRoomIdRoute,
@@ -266,8 +349,19 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardFavoritesRoute: DashboardFavoritesRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
+  AdminIndexRoute: AdminIndexRoute,
   HotelsIndexRoute: HotelsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
