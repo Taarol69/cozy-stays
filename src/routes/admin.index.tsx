@@ -4,11 +4,13 @@ import { Hotel, Bed, CalendarCheck, DollarSign } from "lucide-react";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { formatNPR, formatUSD, useCurrency } from "@/lib/currency";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 export const Route = createFileRoute("/admin/")({ component: AdminHome });
 
 function AdminHome() {
+  const { rate } = useCurrency();
   const [stats, setStats] = useState({ hotels: 0, rooms: 0, bookings: 0, revenue: 0 });
   const [chart, setChart] = useState<{ day: string; revenue: number }[]>([]);
 
@@ -47,10 +49,10 @@ function AdminHome() {
   }, []);
 
   const cards = [
-    { label: "Hotels", value: stats.hotels, Icon: Hotel },
-    { label: "Rooms", value: stats.rooms, Icon: Bed },
-    { label: "Bookings", value: stats.bookings, Icon: CalendarCheck },
-    { label: "Revenue", value: `$${stats.revenue.toFixed(0)}`, Icon: DollarSign },
+    { label: "Hotels", value: String(stats.hotels), Icon: Hotel },
+    { label: "Rooms", value: String(stats.rooms), Icon: Bed },
+    { label: "Bookings", value: String(stats.bookings), Icon: CalendarCheck },
+    { label: "Revenue", value: formatNPR(stats.revenue * rate), sub: formatUSD(stats.revenue), Icon: DollarSign },
   ];
 
   return (
@@ -59,19 +61,20 @@ function AdminHome() {
       <p className="text-muted-foreground">Overview of your business</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map(({ label, value, Icon }) => (
+        {cards.map(({ label, value, sub, Icon }: any) => (
           <Card key={label} className="p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
               <Icon className="h-4 w-4 text-gold" />
             </div>
-            <div className="mt-3 font-display text-3xl font-semibold">{value}</div>
+            <div className="mt-3 font-display text-2xl font-semibold">{value}</div>
+            {sub && <div className="mt-0.5 text-xs text-muted-foreground">{sub}</div>}
           </Card>
         ))}
       </div>
 
       <Card className="mt-6 p-6">
-        <h2 className="font-display text-xl font-semibold">Revenue (last 14 days)</h2>
+        <h2 className="font-display text-xl font-semibold">Revenue (last 14 days, NPR)</h2>
         <div className="mt-4 h-72">
           <ResponsiveContainer>
             <BarChart data={chart}>
@@ -80,7 +83,7 @@ function AdminHome() {
               <YAxis fontSize={12} />
               <Tooltip
                 contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8 }}
-                formatter={(v: any) => [`$${v}`, "Revenue"]}
+                formatter={(v: any) => [formatNPR(Number(v) * rate), "Revenue"]}
               />
               <Bar dataKey="revenue" fill="var(--gold)" radius={[6, 6, 0, 0]} />
             </BarChart>
