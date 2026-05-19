@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { Price } from "@/lib/currency";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard/bookings")({
@@ -91,7 +92,7 @@ function MyBookings() {
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2 p-4">
-                    <div className="font-display text-2xl font-semibold text-gold">${Number(b.total_price).toFixed(2)}</div>
+                    <Price usd={Number(b.total_price)} className="font-display text-xl font-semibold text-gold" size="md" />
                     {b.status === "confirmed" && (
                       <Button variant="outline" size="sm" onClick={() => cancel(b.id)}>Cancel</Button>
                     )}
