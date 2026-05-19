@@ -22,11 +22,21 @@ function Login() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setLoading(false);
+      return toast.error(error.message);
+    }
+    // Check role and route accordingly
+    const uid = data.user?.id;
+    let isAdmin = false;
+    if (uid) {
+      const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+      isAdmin = (roles ?? []).some((r) => r.role === "admin");
+    }
     setLoading(false);
-    if (error) return toast.error(error.message);
     toast.success("Welcome back");
-    navigate({ to: "/" });
+    navigate({ to: isAdmin ? "/admin" : "/" });
   }
 
   return (
