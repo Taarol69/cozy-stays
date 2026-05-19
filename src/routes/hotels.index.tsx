@@ -46,6 +46,7 @@ function HotelsList() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const { rate } = useCurrency();
 
   useEffect(() => {
     load();
@@ -106,7 +107,7 @@ function HotelsList() {
                 <Input
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="City, country..."
+                  placeholder="Kathmandu, Pokhara…"
                 />
                 <Button size="icon" variant="outline" onClick={load}>
                   <Search className="h-4 w-4" />
@@ -115,7 +116,7 @@ function HotelsList() {
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium">
-                Max price: <span className="text-gold">${maxPrice}</span>
+                Max price: <span className="text-gold">{formatNPR(maxPrice * rate)}</span> <span className="text-xs text-muted-foreground">(${maxPrice})</span>
               </label>
               <Slider
                 value={[maxPrice]}
