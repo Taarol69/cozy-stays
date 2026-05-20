@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
 import { Route as DashboardFavoritesRouteImport } from './routes/dashboard.favorites'
@@ -48,6 +49,11 @@ const HotelsIndexRoute = HotelsIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
+  id: '/payment/callback',
+  path: '/payment/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HotelsHotelIdRoute = HotelsHotelIdRouteImport.update({
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
+  '/payment/callback': typeof PaymentCallbackRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
 }
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
+  '/payment/callback': typeof PaymentCallbackRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
 }
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
+  '/payment/callback': typeof PaymentCallbackRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
 }
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/dashboard/favorites'
     | '/dashboard/profile'
     | '/hotels/$hotelId'
+    | '/payment/callback'
     | '/admin/'
     | '/hotels/'
   fileRoutesByTo: FileRoutesByTo
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/dashboard/favorites'
     | '/dashboard/profile'
     | '/hotels/$hotelId'
+    | '/payment/callback'
     | '/admin'
     | '/hotels'
   id:
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/dashboard/favorites'
     | '/dashboard/profile'
     | '/hotels/$hotelId'
+    | '/payment/callback'
     | '/admin/'
     | '/hotels/'
   fileRoutesById: FileRoutesById
@@ -221,6 +233,7 @@ export interface RootRouteChildren {
   DashboardFavoritesRoute: typeof DashboardFavoritesRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
+  PaymentCallbackRoute: typeof PaymentCallbackRoute
   AdminIndexRoute: typeof AdminIndexRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
 }
@@ -260,6 +273,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/callback': {
+      id: '/payment/callback'
+      path: '/payment/callback'
+      fullPath: '/payment/callback'
+      preLoaderRoute: typeof PaymentCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/hotels/$hotelId': {
@@ -349,19 +369,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardFavoritesRoute: DashboardFavoritesRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
+  PaymentCallbackRoute: PaymentCallbackRoute,
   AdminIndexRoute: AdminIndexRoute,
   HotelsIndexRoute: HotelsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
