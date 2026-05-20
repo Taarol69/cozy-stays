@@ -280,4 +280,3 @@ function BookingPage() {
   );
 }
 
-export { CheckCircle2 }; // satisfies tree-shaker
