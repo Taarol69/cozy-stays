@@ -19,17 +19,23 @@ export type Database = {
           check_in: string
           check_out: string
           created_at: string
+          currency: string
           guest_email: string
           guest_name: string
           guest_phone: string | null
           guests: number
           hotel_id: string
           id: string
+          invoice_number: string | null
           nights: number
+          payment_method: string | null
           payment_status: string
           room_id: string
+          service_charge: number
           special_requests: string | null
           status: string
+          subtotal: number | null
+          tax_amount: number
           total_price: number
           updated_at: string
           user_id: string
@@ -38,17 +44,23 @@ export type Database = {
           check_in: string
           check_out: string
           created_at?: string
+          currency?: string
           guest_email: string
           guest_name: string
           guest_phone?: string | null
           guests?: number
           hotel_id: string
           id?: string
+          invoice_number?: string | null
           nights: number
+          payment_method?: string | null
           payment_status?: string
           room_id: string
+          service_charge?: number
           special_requests?: string | null
           status?: string
+          subtotal?: number | null
+          tax_amount?: number
           total_price: number
           updated_at?: string
           user_id: string
@@ -57,17 +69,23 @@ export type Database = {
           check_in?: string
           check_out?: string
           created_at?: string
+          currency?: string
           guest_email?: string
           guest_name?: string
           guest_phone?: string | null
           guests?: number
           hotel_id?: string
           id?: string
+          invoice_number?: string | null
           nights?: number
+          payment_method?: string | null
           payment_status?: string
           room_id?: string
+          service_charge?: number
           special_requests?: string | null
           status?: string
+          subtotal?: number | null
+          tax_amount?: number
           total_price?: number
           updated_at?: string
           user_id?: string
@@ -177,6 +195,62 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string
+          created_at: string
+          currency: string
+          gateway_response: Json | null
+          id: string
+          method: string
+          payment_url: string | null
+          pidx: string | null
+          status: string
+          transaction_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          created_at?: string
+          currency?: string
+          gateway_response?: Json | null
+          id?: string
+          method?: string
+          payment_url?: string | null
+          pidx?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          created_at?: string
+          currency?: string
+          gateway_response?: Json | null
+          id?: string
+          method?: string
+          payment_url?: string | null
+          pidx?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -326,6 +400,7 @@ export type Database = {
     }
     Functions: {
       claim_admin_if_none: { Args: never; Returns: boolean }
+      generate_invoice_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
