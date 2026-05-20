@@ -6,15 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { HotelReviews } from "@/components/HotelReviews";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Price } from "@/lib/currency";
-import { toast } from "sonner";
 import type { Database } from "@/integrations/supabase/types";
 
 type Hotel = Database["public"]["Tables"]["hotels"]["Row"];
 type Room = Database["public"]["Tables"]["rooms"]["Row"];
-type Review = Database["public"]["Tables"]["reviews"]["Row"];
 
 export const Route = createFileRoute("/hotels/$hotelId")({
   component: HotelDetail,
@@ -26,21 +25,19 @@ function HotelDetail() {
   const navigate = useNavigate();
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewStats, setReviewStats] = useState({ avg: 0, count: 0 });
   const [isFav, setIsFav] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const [{ data: h }, { data: r }, { data: rv }] = await Promise.all([
+      const [{ data: h }, { data: r }] = await Promise.all([
         supabase.from("hotels").select("*").eq("id", hotelId).maybeSingle(),
         supabase.from("rooms").select("*").eq("hotel_id", hotelId).order("price_per_night"),
-        supabase.from("reviews").select("*").eq("hotel_id", hotelId).order("created_at", { ascending: false }),
       ]);
       setHotel(h);
       setRooms(r ?? []);
-      setReviews(rv ?? []);
       setLoading(false);
     })();
   }, [hotelId]);
@@ -123,8 +120,8 @@ function HotelDetail() {
             <h1 className="font-display text-3xl font-semibold md:text-4xl">{hotel.name}</h1>
             <div className="mt-2 flex items-center gap-2 text-sm">
               <Star className="h-4 w-4 fill-gold text-gold" />
-              <span className="font-medium">{Number(hotel.rating).toFixed(1)}</span>
-              <span className="text-muted-foreground">· {reviews.length} reviews</span>
+              <span className="font-medium">{(reviewStats.avg || Number(hotel.rating)).toFixed(1)}</span>
+              <span className="text-muted-foreground">· {reviewStats.count} reviews</span>
             </div>
           </div>
           <Button variant="outline" onClick={toggleFav}>
@@ -205,26 +202,11 @@ function HotelDetail() {
             </section>
 
             <section>
-              <h2 className="mb-3 font-display text-2xl font-semibold">Reviews</h2>
-              {reviews.length === 0 ? (
-                <p className="text-muted-foreground">No reviews yet.</p>
-              ) : (
-                <div className="space-y-4">
-                  {reviews.map((r) => (
-                    <Card key={r.id} className="p-4">
-                      <div className="flex items-center gap-1 text-sm">
-                        {Array.from({ length: r.rating }).map((_, i) => (
-                          <Star key={i} className="h-3.5 w-3.5 fill-gold text-gold" />
-                        ))}
-                      </div>
-                      {r.comment && <p className="mt-2 text-sm text-muted-foreground">{r.comment}</p>}
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        {new Date(r.created_at).toLocaleDateString()}
-                      </p>
-                    </Card>
-                  ))}
-                </div>
-              )}
+              <h2 className="mb-3 font-display text-2xl font-semibold">Ratings & reviews</h2>
+              <HotelReviews
+                hotelId={hotelId}
+                onChange={(avg, count) => setReviewStats({ avg, count })}
+              />
             </section>
           </div>
 
