@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Download, Printer } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { Price } from "@/lib/currency";
+import { Price, useCurrency } from "@/lib/currency";
+import { downloadInvoice, printInvoice, type InvoiceData } from "@/lib/invoice";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard/bookings")({
@@ -19,32 +21,83 @@ interface BookingRow {
   check_out: string;
   nights: number;
   guests: number;
+  subtotal: number | null;
+  service_charge: number | null;
+  tax_amount: number | null;
   total_price: number;
   status: string;
   payment_status: string;
-  hotels: { id: string; name: string; city: string; country: string; cover_image: string | null } | null;
-  rooms: { id: string; name: string } | null;
+  payment_method: string | null;
+  invoice_number: string | null;
+  created_at: string;
+  guest_name: string;
+  guest_email: string;
+  guest_phone: string | null;
+  hotels: { id: string; name: string; city: string; country: string; address: string | null; cover_image: string | null } | null;
+  rooms: { id: string; name: string; room_type: string } | null;
+  payments: { transaction_id: string | null }[] | null;
 }
+
+const statusStyle: Record<string, string> = {
+  pending: "bg-muted text-muted-foreground",
+  confirmed: "bg-gold text-gold-foreground",
+  checked_in: "bg-primary text-primary-foreground",
+  completed: "bg-emerald-600 text-white",
+  cancelled: "bg-destructive text-destructive-foreground",
+};
 
 function MyBookings() {
   const { user, loading } = useAuth();
+  const { rate } = useCurrency();
   const [rows, setRows] = useState<BookingRow[]>([]);
 
-  useEffect(() => {
+  async function load() {
     if (!user) return;
-    supabase
+    const { data } = await supabase
       .from("bookings")
-      .select("id, check_in, check_out, nights, guests, total_price, status, payment_status, hotels(id,name,city,country,cover_image), rooms(id,name)")
+      .select(
+        "id, check_in, check_out, nights, guests, subtotal, service_charge, tax_amount, total_price, status, payment_status, payment_method, invoice_number, created_at, guest_name, guest_email, guest_phone, hotels(id,name,city,country,address,cover_image), rooms(id,name,room_type), payments(transaction_id)",
+      )
       .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => setRows((data as any) ?? []));
-  }, [user]);
+      .order("created_at", { ascending: false });
+    setRows((data as any) ?? []);
+  }
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [user]);
 
   async function cancel(id: string) {
     const { error } = await supabase.from("bookings").update({ status: "cancelled" }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Booking cancelled");
-    setRows((r) => r.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b)));
+    load();
+  }
+
+  function asInvoice(b: BookingRow): InvoiceData {
+    return {
+      invoiceNumber: b.invoice_number || `INV-${b.id.slice(0, 8).toUpperCase()}`,
+      bookingId: b.id,
+      status: b.status,
+      paymentStatus: b.payment_status,
+      paymentMethod: b.payment_method,
+      issuedAt: b.created_at,
+      hotel: {
+        name: b.hotels?.name ?? "—",
+        city: b.hotels?.city ?? "",
+        country: b.hotels?.country ?? "",
+        address: b.hotels?.address,
+      },
+      room: { name: b.rooms?.name ?? "—", room_type: b.rooms?.room_type ?? "Standard" },
+      guest: { name: b.guest_name, email: b.guest_email, phone: b.guest_phone },
+      checkIn: b.check_in,
+      checkOut: b.check_out,
+      nights: b.nights,
+      guests: b.guests,
+      subtotal: Number(b.subtotal ?? b.total_price),
+      service: Number(b.service_charge ?? 0),
+      tax: Number(b.tax_amount ?? 0),
+      total: Number(b.total_price),
+      nprRate: rate,
+      transactionId: b.payments?.[0]?.transaction_id ?? null,
+    };
   }
 
   if (!loading && !user) {
@@ -86,16 +139,24 @@ function MyBookings() {
                       <Badge variant="outline">{b.check_in} → {b.check_out}</Badge>
                       <Badge variant="outline">{b.nights} night(s)</Badge>
                       <Badge variant="outline">{b.guests} guests</Badge>
-                      <Badge className={b.status === "cancelled" ? "bg-destructive text-destructive-foreground" : "bg-gold text-gold-foreground"}>
-                        {b.status}
-                      </Badge>
+                      <Badge className={statusStyle[b.status] ?? "bg-muted"}>{b.status.replace("_", " ")}</Badge>
+                      <Badge variant="outline" className="capitalize">payment: {b.payment_status}</Badge>
+                      {b.invoice_number && <Badge variant="outline" className="font-mono">{b.invoice_number}</Badge>}
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-2 p-4">
                     <Price usd={Number(b.total_price)} className="font-display text-xl font-semibold text-gold" size="md" />
-                    {b.status === "confirmed" && (
-                      <Button variant="outline" size="sm" onClick={() => cancel(b.id)}>Cancel</Button>
-                    )}
+                    <div className="flex flex-wrap justify-end gap-2">
+                      <Button variant="outline" size="sm" onClick={() => downloadInvoice(asInvoice(b))}>
+                        <Download className="mr-1.5 h-3.5 w-3.5" /> Invoice
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => printInvoice(asInvoice(b))}>
+                        <Printer className="mr-1.5 h-3.5 w-3.5" /> Print
+                      </Button>
+                      {(b.status === "confirmed" || b.status === "pending") && (
+                        <Button variant="outline" size="sm" onClick={() => cancel(b.id)}>Cancel</Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </Card>
