@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Trash2, Download } from "lucide-react";
+import { Trash2, Download, Mail, Phone, User } from "lucide-react";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/admin/bookings")({ component: AdminBookin
 
 interface Row {
   id: string;
+  user_id: string;
   check_in: string;
   check_out: string;
   guests: number;
@@ -36,6 +38,7 @@ interface Row {
   hotels: { name: string; city: string; country: string; address: string | null } | null;
   rooms: { name: string; room_type: string } | null;
   payments: { transaction_id: string | null }[] | null;
+  profile?: { full_name: string | null; avatar_url: string | null; phone: string | null } | null;
 }
 
 function AdminBookings() {
@@ -46,10 +49,23 @@ function AdminBookings() {
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, check_in, check_out, guests, guest_name, guest_email, guest_phone, nights, subtotal, service_charge, tax_amount, total_price, status, payment_status, payment_method, invoice_number, created_at, hotels(name,city,country,address), rooms(name,room_type), payments(transaction_id)",
+        "id, user_id, check_in, check_out, guests, guest_name, guest_email, guest_phone, nights, subtotal, service_charge, tax_amount, total_price, status, payment_status, payment_method, invoice_number, created_at, hotels(name,city,country,address), rooms(name,room_type), payments(transaction_id)",
       )
       .order("created_at", { ascending: false });
-    setRows((data as any) ?? []);
+    const list = (data as Row[]) ?? [];
+    const userIds = Array.from(new Set(list.map((b) => b.user_id))).filter(Boolean);
+    if (userIds.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, phone")
+        .in("id", userIds);
+      const byId = new Map((profs ?? []).map((p) => [p.id, p]));
+      list.forEach((b) => {
+        const p = byId.get(b.user_id);
+        b.profile = p ? { full_name: p.full_name, avatar_url: p.avatar_url, phone: p.phone } : null;
+      });
+    }
+    setRows(list);
   }
   useEffect(() => { load(); }, []);
 
@@ -111,12 +127,32 @@ function AdminBookings() {
           </div>
         ) : rows.map((b) => (
           <Card key={b.id} className="p-4">
-            <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto_auto_auto] lg:items-center">
+            <div className="grid gap-4 lg:grid-cols-[280px_1fr_auto_auto_auto_auto] lg:items-center">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-12 w-12 border border-border/60">
+                  <AvatarImage src={b.profile?.avatar_url ?? undefined} alt={b.profile?.full_name ?? b.guest_name} />
+                  <AvatarFallback className="bg-gold/15 text-gold">
+                    {(b.profile?.full_name ?? b.guest_name).slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 truncate font-medium">
+                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                    {b.profile?.full_name || b.guest_name}
+                  </div>
+                  <a href={`mailto:${b.guest_email}`} className="flex items-center gap-1.5 truncate text-xs text-muted-foreground hover:text-gold">
+                    <Mail className="h-3 w-3" /> {b.guest_email}
+                  </a>
+                  {(b.guest_phone || b.profile?.phone) && (
+                    <a href={`tel:${b.guest_phone || b.profile?.phone}`} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold">
+                      <Phone className="h-3 w-3" /> {b.guest_phone || b.profile?.phone}
+                    </a>
+                  )}
+                </div>
+              </div>
               <div>
                 <div className="font-medium">{b.hotels?.name} — {b.rooms?.name}</div>
-                <div className="text-xs text-muted-foreground">
-                  {b.guest_name} · {b.guest_email} · {b.guests} guests
-                </div>
+                <div className="text-xs text-muted-foreground">{b.guests} guests</div>
                 <div className="mt-1 flex flex-wrap gap-1.5 text-xs">
                   <Badge variant="outline">{b.check_in} → {b.check_out}</Badge>
                   <Badge variant="outline">{b.nights}n</Badge>

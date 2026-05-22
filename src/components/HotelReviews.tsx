@@ -40,8 +40,6 @@ export function HotelReviews({ hotelId, onChange }: Props) {
     setReviews(rows);
     const avg = rows.length ? rows.reduce((s, r) => s + r.rating, 0) / rows.length : 0;
     onChange?.(avg, rows.length);
-    // Update hotel aggregate rating (best-effort; RLS allows admins only).
-    void supabase.from("hotels").update({ rating: avg }).eq("id", hotelId);
   }
 
   useEffect(() => {
