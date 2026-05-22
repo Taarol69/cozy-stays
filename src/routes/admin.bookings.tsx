@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Trash2, Download } from "lucide-react";
+import { Trash2, Download, Mail, Phone, User } from "lucide-react";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/admin/bookings")({ component: AdminBookin
 
 interface Row {
   id: string;
+  user_id: string;
   check_in: string;
   check_out: string;
   guests: number;
@@ -36,6 +38,7 @@ interface Row {
   hotels: { name: string; city: string; country: string; address: string | null } | null;
   rooms: { name: string; room_type: string } | null;
   payments: { transaction_id: string | null }[] | null;
+  profile?: { full_name: string | null; avatar_url: string | null; phone: string | null } | null;
 }
 
 function AdminBookings() {
@@ -46,10 +49,23 @@ function AdminBookings() {
     const { data } = await supabase
       .from("bookings")
       .select(
-        "id, check_in, check_out, guests, guest_name, guest_email, guest_phone, nights, subtotal, service_charge, tax_amount, total_price, status, payment_status, payment_method, invoice_number, created_at, hotels(name,city,country,address), rooms(name,room_type), payments(transaction_id)",
+        "id, user_id, check_in, check_out, guests, guest_name, guest_email, guest_phone, nights, subtotal, service_charge, tax_amount, total_price, status, payment_status, payment_method, invoice_number, created_at, hotels(name,city,country,address), rooms(name,room_type), payments(transaction_id)",
       )
       .order("created_at", { ascending: false });
-    setRows((data as any) ?? []);
+    const list = (data as Row[]) ?? [];
+    const userIds = Array.from(new Set(list.map((b) => b.user_id))).filter(Boolean);
+    if (userIds.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, phone")
+        .in("id", userIds);
+      const byId = new Map((profs ?? []).map((p) => [p.id, p]));
+      list.forEach((b) => {
+        const p = byId.get(b.user_id);
+        b.profile = p ? { full_name: p.full_name, avatar_url: p.avatar_url, phone: p.phone } : null;
+      });
+    }
+    setRows(list);
   }
   useEffect(() => { load(); }, []);
 
