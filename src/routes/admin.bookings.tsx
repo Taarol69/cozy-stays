@@ -127,12 +127,32 @@ function AdminBookings() {
           </div>
         ) : rows.map((b) => (
           <Card key={b.id} className="p-4">
-            <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto_auto_auto] lg:items-center">
+            <div className="grid gap-4 lg:grid-cols-[280px_1fr_auto_auto_auto_auto] lg:items-center">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-12 w-12 border border-border/60">
+                  <AvatarImage src={b.profile?.avatar_url ?? undefined} alt={b.profile?.full_name ?? b.guest_name} />
+                  <AvatarFallback className="bg-gold/15 text-gold">
+                    {(b.profile?.full_name ?? b.guest_name).slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 truncate font-medium">
+                    <User className="h-3.5 w-3.5 text-muted-foreground" />
+                    {b.profile?.full_name || b.guest_name}
+                  </div>
+                  <a href={`mailto:${b.guest_email}`} className="flex items-center gap-1.5 truncate text-xs text-muted-foreground hover:text-gold">
+                    <Mail className="h-3 w-3" /> {b.guest_email}
+                  </a>
+                  {(b.guest_phone || b.profile?.phone) && (
+                    <a href={`tel:${b.guest_phone || b.profile?.phone}`} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-gold">
+                      <Phone className="h-3 w-3" /> {b.guest_phone || b.profile?.phone}
+                    </a>
+                  )}
+                </div>
+              </div>
               <div>
                 <div className="font-medium">{b.hotels?.name} — {b.rooms?.name}</div>
-                <div className="text-xs text-muted-foreground">
-                  {b.guest_name} · {b.guest_email} · {b.guests} guests
-                </div>
+                <div className="text-xs text-muted-foreground">{b.guests} guests</div>
                 <div className="mt-1 flex flex-wrap gap-1.5 text-xs">
                   <Badge variant="outline">{b.check_in} → {b.check_out}</Badge>
                   <Badge variant="outline">{b.nights}n</Badge>
