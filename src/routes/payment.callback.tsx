@@ -11,12 +11,22 @@ import { verifyKhaltiPayment } from "@/lib/payment.functions";
 import { useCurrency, formatNPR } from "@/lib/currency";
 import { downloadInvoice, printInvoice, type InvoiceData } from "@/lib/invoice";
 
-const searchSchema = z.object({
-  pidx: z.string().optional(),
-  bookingId: z.string().optional(),
-  offline: z.string().optional(),
-  status: z.string().optional(),
-});
+const searchSchema = z
+  .object({
+    pidx: z.string().optional(),
+    bookingId: z.string().optional(),
+    offline: z.string().optional(),
+    status: z.string().optional(),
+    purchase_order_id: z.string().optional(),
+    transaction_id: z.string().optional(),
+    amount: z.string().optional(),
+    total_amount: z.string().optional(),
+    mobile: z.string().optional(),
+    tidx: z.string().optional(),
+    txnId: z.string().optional(),
+    purchase_order_name: z.string().optional(),
+  })
+  .passthrough();
 
 export const Route = createFileRoute("/payment/callback")({
   validateSearch: (s) => searchSchema.parse(s),
@@ -28,6 +38,8 @@ type State =
   | { kind: "success"; bookingId: string }
   | { kind: "pending"; bookingId: string }
   | { kind: "failed"; message: string };
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function PaymentCallback() {
   const search = useSearch({ from: "/payment/callback" });
@@ -46,15 +58,37 @@ function PaymentCallback() {
           setState({ kind: "failed", message: "Missing payment reference." });
           return;
         }
-        const res = await verifyKhaltiPayment({ data: { pidx: search.pidx } });
-        if (res.status === "completed") setState({ kind: "success", bookingId: res.bookingId });
-        else if (res.status === "pending") setState({ kind: "pending", bookingId: res.bookingId });
-        else setState({ kind: "failed", message: "Payment was not completed." });
+
+        // Retry verify up to 4 times — Khalti's lookup can briefly report
+        // "Pending" right after the user returns from the gateway.
+        let lastErr: string | null = null;
+        for (let attempt = 0; attempt < 4; attempt++) {
+          try {
+            const res = await verifyKhaltiPayment({ data: { pidx: search.pidx } });
+            if (res.status === "completed") {
+              setState({ kind: "success", bookingId: res.bookingId });
+              return;
+            }
+            if (res.status === "failed") {
+              setState({ kind: "failed", message: "Payment was not completed." });
+              return;
+            }
+            // still pending → wait and retry
+            lastErr = null;
+            if (attempt < 3) await sleep(1500);
+            else setState({ kind: "pending", bookingId: res.bookingId });
+          } catch (err: any) {
+            lastErr = err?.message ?? "Verification failed";
+            if (attempt < 3) await sleep(1500);
+          }
+        }
+        if (lastErr) setState({ kind: "failed", message: lastErr });
       } catch (err: any) {
         setState({ kind: "failed", message: err?.message ?? "Verification failed" });
       }
     })();
   }, [search.pidx, search.offline, search.bookingId]);
+
 
   useEffect(() => {
     if (state.kind !== "success" && state.kind !== "pending") return;
