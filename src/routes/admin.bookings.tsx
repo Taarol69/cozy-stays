@@ -67,7 +67,15 @@ function AdminBookings() {
     }
     setRows(list);
   }
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    const channel = supabase
+      .channel("admin-bookings")
+      .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "payments" }, () => load())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   async function setStatus(id: string, status: string) {
     const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
