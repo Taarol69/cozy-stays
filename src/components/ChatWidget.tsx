@@ -121,7 +121,7 @@ export function ChatWidget() {
                   )}
                 >
                   <div className="prose prose-sm prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_code]:rounded [&_code]:bg-background/40 [&_code]:px-1 [&_code]:py-0.5">
-                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                    <ReactMarkdown components={mdComponents}>{m.content}</ReactMarkdown>
                   </div>
                 </div>
               </div>
