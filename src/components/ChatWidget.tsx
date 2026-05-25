@@ -1,10 +1,38 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Send, Loader2, Sparkles } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { chatWithAssistant } from "@/lib/chat.functions";
+
+// Markdown renderer that routes internal links through TanStack Link
+// (so clicks navigate without a full page reload).
+const mdComponents = {
+  a: ({ href, children, ...props }: any) => {
+    const isInternal = typeof href === "string" && href.startsWith("/");
+    if (isInternal) {
+      return (
+        <Link to={href} className="text-gold underline underline-offset-2 hover:opacity-80">
+          {children}
+        </Link>
+      );
+    }
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="text-gold underline underline-offset-2 hover:opacity-80"
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  },
+};
+
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -93,7 +121,7 @@ export function ChatWidget() {
                   )}
                 >
                   <div className="prose prose-sm prose-invert max-w-none [&_p]:my-1 [&_ul]:my-1 [&_code]:rounded [&_code]:bg-background/40 [&_code]:px-1 [&_code]:py-0.5">
-                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                    <ReactMarkdown components={mdComponents}>{m.content}</ReactMarkdown>
                   </div>
                 </div>
               </div>

@@ -1,5 +1,6 @@
-import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+
 import { CheckCircle2, XCircle, Loader2, Download, Printer } from "lucide-react";
 import { z } from "zod";
 import { SiteLayout } from "@/components/layout/SiteLayout";
@@ -43,9 +44,26 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function PaymentCallback() {
   const search = useSearch({ from: "/payment/callback" });
+  const navigate = useNavigate();
   const [state, setState] = useState<State>({ kind: "loading" });
   const [booking, setBooking] = useState<any | null>(null);
+  const [redirectIn, setRedirectIn] = useState(5);
   const { rate } = useCurrency();
+
+  // Auto-redirect to My Bookings shortly after a confirmed payment.
+  useEffect(() => {
+    if (state.kind !== "success") return;
+    setRedirectIn(5);
+    const tick = setInterval(() => setRedirectIn((n) => Math.max(0, n - 1)), 1000);
+    const t = setTimeout(() => {
+      navigate({ to: "/dashboard/bookings" });
+    }, 5000);
+    return () => {
+      clearInterval(tick);
+      clearTimeout(t);
+    };
+  }, [state, navigate]);
+
 
   useEffect(() => {
     (async () => {
@@ -178,6 +196,10 @@ function PaymentCallback() {
               <p className="mt-2 text-sm text-muted-foreground">
                 Booking reference: <span className="font-mono text-foreground">{state.bookingId.slice(0, 8).toUpperCase()}</span>
               </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Redirecting to <Link to="/dashboard/bookings" className="underline">My Bookings</Link> in {redirectIn}s…
+              </p>
+
 
               {booking && (
                 <div className="mt-6 grid gap-2 rounded-lg bg-muted/40 p-4 text-left text-sm">
