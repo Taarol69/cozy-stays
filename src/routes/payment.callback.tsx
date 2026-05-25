@@ -196,6 +196,10 @@ function PaymentCallback() {
               <p className="mt-2 text-sm text-muted-foreground">
                 Booking reference: <span className="font-mono text-foreground">{state.bookingId.slice(0, 8).toUpperCase()}</span>
               </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Redirecting to <Link to="/dashboard/bookings" className="underline">My Bookings</Link> in {redirectIn}s…
+              </p>
+
 
               {booking && (
                 <div className="mt-6 grid gap-2 rounded-lg bg-muted/40 p-4 text-left text-sm">
