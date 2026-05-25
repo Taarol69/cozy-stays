@@ -122,10 +122,12 @@ export const verifyKhaltiPayment = createServerFn({ method: "POST" })
     }
 
     const khaltiStatus = String(body?.status || "").toLowerCase();
+    console.log("[verifyKhalti] pidx=%s khaltiStatus=%s", data.pidx, khaltiStatus);
     let paymentStatus: "completed" | "pending" | "failed" = "pending";
     if (khaltiStatus === "completed") paymentStatus = "completed";
     else if (["expired", "user canceled", "failed", "refunded"].includes(khaltiStatus))
       paymentStatus = "failed";
+
 
     await supabaseAdmin
       .from("payments")
