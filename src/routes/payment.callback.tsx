@@ -1,5 +1,6 @@
-import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+
 import { CheckCircle2, XCircle, Loader2, Download, Printer } from "lucide-react";
 import { z } from "zod";
 import { SiteLayout } from "@/components/layout/SiteLayout";
