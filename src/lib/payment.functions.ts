@@ -90,21 +90,22 @@ export const initiateKhaltiPayment = createServerFn({ method: "POST" })
  * an invoice number on success. Safe to call multiple times (idempotent).
  */
 export const verifyKhaltiPayment = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ pidx: z.string().min(1) }).parse(input))
-  .handler(async ({ data, context }) => {
-    const { userId } = context;
+  .handler(async ({ data }) => {
     const secret = process.env.KHALTI_SECRET_KEY;
     if (!secret) throw new Error("Khalti is not configured");
 
-    // Find payment row (must belong to caller).
+    // Find payment row by pidx (pidx is unguessable, server-issued).
     const { data: payment, error: pErr } = await supabaseAdmin
       .from("payments")
       .select("*")
       .eq("pidx", data.pidx)
       .maybeSingle();
-    if (pErr || !payment) throw new Error("Payment not found");
-    if (payment.user_id !== userId) throw new Error("Forbidden");
+    if (pErr || !payment) {
+      console.error("[verifyKhalti] payment row not found", data.pidx, pErr);
+      throw new Error("Payment not found");
+    }
+
 
     const res = await fetch(`${KHALTI_BASE}/epayment/lookup/`, {
       method: "POST",
