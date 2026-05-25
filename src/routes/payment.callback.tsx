@@ -44,9 +44,26 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function PaymentCallback() {
   const search = useSearch({ from: "/payment/callback" });
+  const navigate = useNavigate();
   const [state, setState] = useState<State>({ kind: "loading" });
   const [booking, setBooking] = useState<any | null>(null);
+  const [redirectIn, setRedirectIn] = useState(5);
   const { rate } = useCurrency();
+
+  // Auto-redirect to My Bookings shortly after a confirmed payment.
+  useEffect(() => {
+    if (state.kind !== "success") return;
+    setRedirectIn(5);
+    const tick = setInterval(() => setRedirectIn((n) => Math.max(0, n - 1)), 1000);
+    const t = setTimeout(() => {
+      navigate({ to: "/dashboard/bookings" });
+    }, 5000);
+    return () => {
+      clearInterval(tick);
+      clearTimeout(t);
+    };
+  }, [state, navigate]);
+
 
   useEffect(() => {
     (async () => {
