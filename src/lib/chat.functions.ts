@@ -17,10 +17,15 @@ You help guests:
 - Discover hotels (by city, vibe, price, star rating, amenities)
 - Understand rooms, prices (shown in NPR with USD reference), check-in/out, nights
 - Walk through the booking flow: pick a hotel → pick a room → fill guest details → pay with Khalti (sandbox) or "Pay at hotel"
-- Find their bookings under /dashboard/bookings, favorites under /dashboard/favorites
-- Explain that admins manage hotels/rooms at /admin
+- Find their bookings under "My Bookings" and favorites under "My Favorites"
 
-Style: warm, concise, use markdown (short paragraphs, bullets, **bold** for key info). When suggesting a page, give the path in backticks, e.g. \`/hotels\`. If you don't know a specific hotel, recommend browsing \`/hotels\` and using filters. Never invent prices or availability — refer the user to the live listing.`;
+LINK RULES (very important):
+- ALWAYS write site links as proper markdown links: [Browse all hotels](/hotels), [My Bookings](/dashboard/bookings), [My Favorites](/dashboard/favorites).
+- When you mention a specific hotel from the catalog, link to that hotel's page using its id, e.g. [Hotel Everest View](/hotels/<id>). The hotel ids are given to you below.
+- Never write a bare path like \`/hotels\` — always wrap it in a friendly label like [our hotel collection](/hotels).
+- Never invent hotel ids or prices. Only use the ones listed in the catalog context.
+
+Style: warm, concise, use markdown (short paragraphs, bullets, **bold** for key info). If unsure about availability, point them to [our hotel collection](/hotels) and the filters there.`;
 
 export const chatWithAssistant = createServerFn({ method: "POST" })
   .inputValidator((input) => inputSchema.parse(input))
@@ -31,16 +36,17 @@ export const chatWithAssistant = createServerFn({ method: "POST" })
     // Lightweight live context so the assistant can give real suggestions.
     const { data: hotels } = await supabaseAdmin
       .from("hotels")
-      .select("name, city, country, star_rating, rating, price_from")
+      .select("id, name, city, country, star_rating, rating, price_from")
       .order("rating", { ascending: false })
-      .limit(8);
+      .limit(12);
 
     const hotelContext = (hotels ?? [])
       .map(
         (h) =>
-          `- ${h.name} — ${h.city}, ${h.country} · ${h.star_rating}★ · rating ${h.rating} · from $${Number(h.price_from).toFixed(0)}/night`,
+          `- [${h.name}](/hotels/${h.id}) — ${h.city}, ${h.country} · ${h.star_rating}★ · rating ${h.rating} · from $${Number(h.price_from).toFixed(0)}/night`,
       )
       .join("\n");
+
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
