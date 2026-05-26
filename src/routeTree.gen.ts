@@ -25,6 +25,7 @@ import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminRoomsRouteImport } from './routes/admin.rooms'
 import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
 import { Route as AdminBookingsRouteImport } from './routes/admin.bookings'
+import { Route as DashboardBookingsBookingIdRouteImport } from './routes/dashboard.bookings.$bookingId'
 import { Route as ApiPublicHooksReconcileKhaltiRouteImport } from './routes/api/public/hooks/reconcile-khalti'
 
 const ContactRoute = ContactRouteImport.update({
@@ -107,6 +108,12 @@ const AdminBookingsRoute = AdminBookingsRouteImport.update({
   path: '/admin/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardBookingsBookingIdRoute =
+  DashboardBookingsBookingIdRouteImport.update({
+    id: '/$bookingId',
+    path: '/$bookingId',
+    getParentRoute: () => DashboardBookingsRoute,
+  } as any)
 const ApiPublicHooksReconcileKhaltiRoute =
   ApiPublicHooksReconcileKhaltiRouteImport.update({
     id: '/api/public/hooks/reconcile-khalti',
@@ -124,13 +131,14 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/bookings': typeof DashboardBookingsRouteWithChildren
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
   '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRoutesByTo {
@@ -143,13 +151,14 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/bookings': typeof DashboardBookingsRouteWithChildren
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
+  '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
   '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRoutesById {
@@ -163,13 +172,14 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/bookings': typeof DashboardBookingsRouteWithChildren
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
   '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRouteTypes {
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/admin/'
     | '/hotels/'
+    | '/dashboard/bookings/$bookingId'
     | '/api/public/hooks/reconcile-khalti'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/admin'
     | '/hotels'
+    | '/dashboard/bookings/$bookingId'
     | '/api/public/hooks/reconcile-khalti'
   id:
     | '__root__'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/admin/'
     | '/hotels/'
+    | '/dashboard/bookings/$bookingId'
     | '/api/public/hooks/reconcile-khalti'
   fileRoutesById: FileRoutesById
 }
@@ -242,7 +255,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   BookingRoomIdRoute: typeof BookingRoomIdRoute
-  DashboardBookingsRoute: typeof DashboardBookingsRoute
+  DashboardBookingsRoute: typeof DashboardBookingsRouteWithChildren
   DashboardFavoritesRoute: typeof DashboardFavoritesRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
@@ -366,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/bookings/$bookingId': {
+      id: '/dashboard/bookings/$bookingId'
+      path: '/$bookingId'
+      fullPath: '/dashboard/bookings/$bookingId'
+      preLoaderRoute: typeof DashboardBookingsBookingIdRouteImport
+      parentRoute: typeof DashboardBookingsRoute
+    }
     '/api/public/hooks/reconcile-khalti': {
       id: '/api/public/hooks/reconcile-khalti'
       path: '/api/public/hooks/reconcile-khalti'
@@ -375,6 +395,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface DashboardBookingsRouteChildren {
+  DashboardBookingsBookingIdRoute: typeof DashboardBookingsBookingIdRoute
+}
+
+const DashboardBookingsRouteChildren: DashboardBookingsRouteChildren = {
+  DashboardBookingsBookingIdRoute: DashboardBookingsBookingIdRoute,
+}
+
+const DashboardBookingsRouteWithChildren =
+  DashboardBookingsRoute._addFileChildren(DashboardBookingsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -386,7 +417,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   BookingRoomIdRoute: BookingRoomIdRoute,
-  DashboardBookingsRoute: DashboardBookingsRoute,
+  DashboardBookingsRoute: DashboardBookingsRouteWithChildren,
   DashboardFavoritesRoute: DashboardFavoritesRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
