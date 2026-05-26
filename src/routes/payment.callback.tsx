@@ -50,19 +50,32 @@ function PaymentCallback() {
   const [redirectIn, setRedirectIn] = useState(5);
   const { rate } = useCurrency();
 
-  // Auto-redirect to My Bookings shortly after a confirmed payment.
+  // Auto-redirect to the booking details page shortly after success.
   useEffect(() => {
     if (state.kind !== "success") return;
-    setRedirectIn(5);
+    setRedirectIn(4);
     const tick = setInterval(() => setRedirectIn((n) => Math.max(0, n - 1)), 1000);
     const t = setTimeout(() => {
-      navigate({ to: "/dashboard/bookings" });
-    }, 5000);
+      navigate({ to: "/dashboard/bookings/$bookingId", params: { bookingId: state.bookingId } });
+    }, 4000);
     return () => {
       clearInterval(tick);
       clearTimeout(t);
     };
   }, [state, navigate]);
+
+  // Auto-redirect to the failure page (with pidx + bookingId) so users land
+  // on the retry / restart-checkout UI instead of staying on the callback.
+  useEffect(() => {
+    if (state.kind !== "failed") return;
+    const t = setTimeout(() => {
+      navigate({
+        to: "/payment/failed",
+        search: { pidx: search.pidx, bookingId: search.bookingId, reason: state.message } as any,
+      });
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [state, navigate, search.pidx, search.bookingId]);
 
 
   useEffect(() => {
