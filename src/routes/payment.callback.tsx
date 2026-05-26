@@ -210,7 +210,7 @@ function PaymentCallback() {
                 Booking reference: <span className="font-mono text-foreground">{state.bookingId.slice(0, 8).toUpperCase()}</span>
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Redirecting to <Link to="/dashboard/bookings" className="underline">My Bookings</Link> in {redirectIn}s…
+                Redirecting to <Link to="/dashboard/bookings/$bookingId" params={{ bookingId: state.bookingId }} className="underline">your booking</Link> in {redirectIn}s…
               </p>
 
 
