@@ -25,6 +25,7 @@ import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminRoomsRouteImport } from './routes/admin.rooms'
 import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
 import { Route as AdminBookingsRouteImport } from './routes/admin.bookings'
+import { Route as ApiPublicHooksReconcileKhaltiRouteImport } from './routes/api/public/hooks/reconcile-khalti'
 
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
@@ -106,6 +107,12 @@ const AdminBookingsRoute = AdminBookingsRouteImport.update({
   path: '/admin/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksReconcileKhaltiRoute =
+  ApiPublicHooksReconcileKhaltiRouteImport.update({
+    id: '/api/public/hooks/reconcile-khalti',
+    path: '/api/public/hooks/reconcile-khalti',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/payment/callback': typeof PaymentCallbackRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -142,6 +150,7 @@ export interface FileRoutesByTo {
   '/payment/callback': typeof PaymentCallbackRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
+  '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -161,6 +170,7 @@ export interface FileRoutesById {
   '/payment/callback': typeof PaymentCallbackRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/admin/'
     | '/hotels/'
+    | '/api/public/hooks/reconcile-khalti'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/admin'
     | '/hotels'
+    | '/api/public/hooks/reconcile-khalti'
   id:
     | '__root__'
     | '/'
@@ -217,6 +229,7 @@ export interface FileRouteTypes {
     | '/payment/callback'
     | '/admin/'
     | '/hotels/'
+    | '/api/public/hooks/reconcile-khalti'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -236,6 +249,7 @@ export interface RootRouteChildren {
   PaymentCallbackRoute: typeof PaymentCallbackRoute
   AdminIndexRoute: typeof AdminIndexRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
+  ApiPublicHooksReconcileKhaltiRoute: typeof ApiPublicHooksReconcileKhaltiRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -352,6 +366,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/reconcile-khalti': {
+      id: '/api/public/hooks/reconcile-khalti'
+      path: '/api/public/hooks/reconcile-khalti'
+      fullPath: '/api/public/hooks/reconcile-khalti'
+      preLoaderRoute: typeof ApiPublicHooksReconcileKhaltiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -372,7 +393,18 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentCallbackRoute: PaymentCallbackRoute,
   AdminIndexRoute: AdminIndexRoute,
   HotelsIndexRoute: HotelsIndexRoute,
+  ApiPublicHooksReconcileKhaltiRoute: ApiPublicHooksReconcileKhaltiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
