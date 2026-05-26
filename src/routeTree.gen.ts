@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as PaymentFailedRouteImport } from './routes/payment.failed'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
@@ -25,6 +26,8 @@ import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminRoomsRouteImport } from './routes/admin.rooms'
 import { Route as AdminHotelsRouteImport } from './routes/admin.hotels'
 import { Route as AdminBookingsRouteImport } from './routes/admin.bookings'
+import { Route as DashboardBookingsBookingIdRouteImport } from './routes/dashboard.bookings.$bookingId'
+import { Route as ApiPublicHooksReconcileKhaltiRouteImport } from './routes/api/public/hooks/reconcile-khalti'
 
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
@@ -49,6 +52,11 @@ const HotelsIndexRoute = HotelsIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentFailedRoute = PaymentFailedRouteImport.update({
+  id: '/payment/failed',
+  path: '/payment/failed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
@@ -106,6 +114,18 @@ const AdminBookingsRoute = AdminBookingsRouteImport.update({
   path: '/admin/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardBookingsBookingIdRoute =
+  DashboardBookingsBookingIdRouteImport.update({
+    id: '/$bookingId',
+    path: '/$bookingId',
+    getParentRoute: () => DashboardBookingsRoute,
+  } as any)
+const ApiPublicHooksReconcileKhaltiRoute =
+  ApiPublicHooksReconcileKhaltiRouteImport.update({
+    id: '/api/public/hooks/reconcile-khalti',
+    path: '/api/public/hooks/reconcile-khalti',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -117,13 +137,16 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/bookings': typeof DashboardBookingsRouteWithChildren
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
+  '/payment/failed': typeof PaymentFailedRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
+  '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -135,13 +158,16 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/bookings': typeof DashboardBookingsRouteWithChildren
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
+  '/payment/failed': typeof PaymentFailedRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
+  '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
+  '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -154,13 +180,16 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/booking/$roomId': typeof BookingRoomIdRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/dashboard/bookings': typeof DashboardBookingsRouteWithChildren
   '/dashboard/favorites': typeof DashboardFavoritesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
+  '/payment/failed': typeof PaymentFailedRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
+  '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
+  '/api/public/hooks/reconcile-khalti': typeof ApiPublicHooksReconcileKhaltiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -179,8 +208,11 @@ export interface FileRouteTypes {
     | '/dashboard/profile'
     | '/hotels/$hotelId'
     | '/payment/callback'
+    | '/payment/failed'
     | '/admin/'
     | '/hotels/'
+    | '/dashboard/bookings/$bookingId'
+    | '/api/public/hooks/reconcile-khalti'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -197,8 +229,11 @@ export interface FileRouteTypes {
     | '/dashboard/profile'
     | '/hotels/$hotelId'
     | '/payment/callback'
+    | '/payment/failed'
     | '/admin'
     | '/hotels'
+    | '/dashboard/bookings/$bookingId'
+    | '/api/public/hooks/reconcile-khalti'
   id:
     | '__root__'
     | '/'
@@ -215,8 +250,11 @@ export interface FileRouteTypes {
     | '/dashboard/profile'
     | '/hotels/$hotelId'
     | '/payment/callback'
+    | '/payment/failed'
     | '/admin/'
     | '/hotels/'
+    | '/dashboard/bookings/$bookingId'
+    | '/api/public/hooks/reconcile-khalti'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -229,13 +267,15 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   BookingRoomIdRoute: typeof BookingRoomIdRoute
-  DashboardBookingsRoute: typeof DashboardBookingsRoute
+  DashboardBookingsRoute: typeof DashboardBookingsRouteWithChildren
   DashboardFavoritesRoute: typeof DashboardFavoritesRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
+  PaymentFailedRoute: typeof PaymentFailedRoute
   AdminIndexRoute: typeof AdminIndexRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
+  ApiPublicHooksReconcileKhaltiRoute: typeof ApiPublicHooksReconcileKhaltiRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -273,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/failed': {
+      id: '/payment/failed'
+      path: '/payment/failed'
+      fullPath: '/payment/failed'
+      preLoaderRoute: typeof PaymentFailedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/payment/callback': {
@@ -352,8 +399,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/bookings/$bookingId': {
+      id: '/dashboard/bookings/$bookingId'
+      path: '/$bookingId'
+      fullPath: '/dashboard/bookings/$bookingId'
+      preLoaderRoute: typeof DashboardBookingsBookingIdRouteImport
+      parentRoute: typeof DashboardBookingsRoute
+    }
+    '/api/public/hooks/reconcile-khalti': {
+      id: '/api/public/hooks/reconcile-khalti'
+      path: '/api/public/hooks/reconcile-khalti'
+      fullPath: '/api/public/hooks/reconcile-khalti'
+      preLoaderRoute: typeof ApiPublicHooksReconcileKhaltiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface DashboardBookingsRouteChildren {
+  DashboardBookingsBookingIdRoute: typeof DashboardBookingsBookingIdRoute
+}
+
+const DashboardBookingsRouteChildren: DashboardBookingsRouteChildren = {
+  DashboardBookingsBookingIdRoute: DashboardBookingsBookingIdRoute,
+}
+
+const DashboardBookingsRouteWithChildren =
+  DashboardBookingsRoute._addFileChildren(DashboardBookingsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -365,13 +437,15 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   BookingRoomIdRoute: BookingRoomIdRoute,
-  DashboardBookingsRoute: DashboardBookingsRoute,
+  DashboardBookingsRoute: DashboardBookingsRouteWithChildren,
   DashboardFavoritesRoute: DashboardFavoritesRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
+  PaymentFailedRoute: PaymentFailedRoute,
   AdminIndexRoute: AdminIndexRoute,
   HotelsIndexRoute: HotelsIndexRoute,
+  ApiPublicHooksReconcileKhaltiRoute: ApiPublicHooksReconcileKhaltiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
