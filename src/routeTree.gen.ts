@@ -14,6 +14,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HotelsIndexRouteImport } from './routes/hotels.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as PaymentFailedRouteImport } from './routes/payment.failed'
 import { Route as PaymentCallbackRouteImport } from './routes/payment.callback'
 import { Route as HotelsHotelIdRouteImport } from './routes/hotels.$hotelId'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
@@ -51,6 +52,11 @@ const HotelsIndexRoute = HotelsIndexRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaymentFailedRoute = PaymentFailedRouteImport.update({
+  id: '/payment/failed',
+  path: '/payment/failed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaymentCallbackRoute = PaymentCallbackRouteImport.update({
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
+  '/payment/failed': typeof PaymentFailedRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
   '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
+  '/payment/failed': typeof PaymentFailedRoute
   '/admin': typeof AdminIndexRoute
   '/hotels': typeof HotelsIndexRoute
   '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/dashboard/profile': typeof DashboardProfileRoute
   '/hotels/$hotelId': typeof HotelsHotelIdRoute
   '/payment/callback': typeof PaymentCallbackRoute
+  '/payment/failed': typeof PaymentFailedRoute
   '/admin/': typeof AdminIndexRoute
   '/hotels/': typeof HotelsIndexRoute
   '/dashboard/bookings/$bookingId': typeof DashboardBookingsBookingIdRoute
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/dashboard/profile'
     | '/hotels/$hotelId'
     | '/payment/callback'
+    | '/payment/failed'
     | '/admin/'
     | '/hotels/'
     | '/dashboard/bookings/$bookingId'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/dashboard/profile'
     | '/hotels/$hotelId'
     | '/payment/callback'
+    | '/payment/failed'
     | '/admin'
     | '/hotels'
     | '/dashboard/bookings/$bookingId'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/dashboard/profile'
     | '/hotels/$hotelId'
     | '/payment/callback'
+    | '/payment/failed'
     | '/admin/'
     | '/hotels/'
     | '/dashboard/bookings/$bookingId'
@@ -260,6 +272,7 @@ export interface RootRouteChildren {
   DashboardProfileRoute: typeof DashboardProfileRoute
   HotelsHotelIdRoute: typeof HotelsHotelIdRoute
   PaymentCallbackRoute: typeof PaymentCallbackRoute
+  PaymentFailedRoute: typeof PaymentFailedRoute
   AdminIndexRoute: typeof AdminIndexRoute
   HotelsIndexRoute: typeof HotelsIndexRoute
   ApiPublicHooksReconcileKhaltiRoute: typeof ApiPublicHooksReconcileKhaltiRoute
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/payment/failed': {
+      id: '/payment/failed'
+      path: '/payment/failed'
+      fullPath: '/payment/failed'
+      preLoaderRoute: typeof PaymentFailedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/payment/callback': {
@@ -422,6 +442,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardProfileRoute: DashboardProfileRoute,
   HotelsHotelIdRoute: HotelsHotelIdRoute,
   PaymentCallbackRoute: PaymentCallbackRoute,
+  PaymentFailedRoute: PaymentFailedRoute,
   AdminIndexRoute: AdminIndexRoute,
   HotelsIndexRoute: HotelsIndexRoute,
   ApiPublicHooksReconcileKhaltiRoute: ApiPublicHooksReconcileKhaltiRoute,
